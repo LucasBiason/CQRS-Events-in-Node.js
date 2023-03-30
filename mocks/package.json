@@ -1,0 +1,21 @@
+{
+  "scripts": {
+    "dev": "ts-node-dev --transpile-only init.ts"
+  },
+  "dependencies": {
+    "msw": "^0.48.0",
+    "typescript": "^4.8.4"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.9",
+    "nock": "^13.2.9",
+    "nodemon": "^2.0.20",
+    "ts-node-dev": "^2.0.0"
+  },
+  "name": "mocks",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

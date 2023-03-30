@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+message CartEnvelop {
+
+	message Transaction {
+		string id = 1;
+	}
+
+	message Cart {
+		string id = 1;
+		float total = 2;
+
+		message Product {
+			string id = 1;
+			string name = 2;
+			float price = 3;
+			int64 quantity = 4;
+		}
+
+		repeated Product products = 3;
+	}
+
+	Cart cart = 1;
+	Transaction transaction = 2;
+
+}

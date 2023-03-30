@@ -1,0 +1,166 @@
+version: "3.3"
+
+services:
+
+  cqrs-pulsar:
+    container_name: cqrs-pulsar
+    image: apachepulsar/pulsar:2.6.0
+    ports:
+      - 8080:8080
+      - 6650:6650
+    environment:
+      PULSAR_MEM: " -Xms512m -Xmx512m -XX:MaxDirectMemorySize=1g"
+    command: bin/pulsar standalone
+
+  flowbuild_mqtt:
+    image: hivemq/hivemq4:latest
+    container_name: flowbuild_mqtt
+    restart: on-failure:10
+    ports:
+      - 8081:8080
+      - 1883:1883
+      - 8000:8000
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - write_system
+    ports:
+      - "4000:4000"
+
+  postgres:
+    hostname: postgres
+    container_name: postgres_container
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      PGDATA: /data/postgres
+    volumes:
+       - postgres:/data/postgres
+    ports:
+      - "5437:5432"
+    restart: unless-stopped
+
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+       - pgadmin:/var/lib/pgadmin
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    restart: unless-stopped
+
+  flowbuild_app:
+    container_name: flowbuild_app
+    restart: on-failure:10
+    ports:
+      - 3000:3000
+    build:
+      context: .
+      dockerfile: flowbuild/Dockerfile
+    env_file: ./config/.env.flowbuild.dev
+    #command: bash -c " npm run migrations && npm run seeds && nodemon src/server.js"
+    command: bash -c " nodemon src/server.js"
+    volumes:
+      - .:/usr/app
+    depends_on:
+      - flowbuild_mqtt
+      - postgres
+
+  write_system:
+    hostname: write_system
+    restart: unless-stopped
+    expose:
+      - "3000"
+    build:
+      context: .
+      dockerfile: write_system/Dockerfile
+    command: npm run start
+    volumes:
+      - .:/usr/app
+    env_file: ./config/.env.write.dev
+    depends_on:
+      - cqrs-pulsar
+      - postgres
+
+  events_conversor:
+    hostname: events_conversor
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: events_conversor/Dockerfile
+    command: npm run start
+    volumes:
+      - .:/usr/app
+    env_file: ./config/.env.events_conversor.dev
+    depends_on:
+      - cqrs-pulsar
+
+  node_read_system:
+    container_name: node_read_system
+    hostname: node_read_system
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: read_system/Dockerfile
+    command: npm run start
+    ports:
+      - "3009:3009"
+    env_file: ./config/.env.read.dev
+    depends_on:
+      - write_system
+    labels:
+      production_status: "testing"
+
+  node_read_system_listeners:
+    container_name: node_read_system_listeners
+    hostname: node_read_system
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: read_system/Dockerfile
+    command: npm run start-subscribers
+    env_file: ./config/.env.read.dev
+    depends_on:
+      - write_system
+    labels:
+      production_status: "testing"
+
+  python_read_system:
+    container_name: python_read_system
+    restart: unless-stopped
+    command: runserver
+    build:
+      context: .
+      dockerfile: python_read_system/Dockerfile
+    ports:
+      - "8008:8008"
+    env_file: ./config/.env.python.dev
+    depends_on:
+      - write_system
+
+  python_read_system_listeners:
+    container_name: python_read_system_listeners
+    restart: unless-stopped
+    command: listen_events
+    build:
+      context: .
+      dockerfile: python_read_system/Dockerfile
+    env_file: ./config/.env.python.dev
+    depends_on:
+      - write_system
+
+networks:
+  default:
+    driver: bridge
+
+volumes:
+    postgres:
+    pgadmin:

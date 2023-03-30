@@ -1,0 +1,149 @@
+{
+	"info": {
+		"_postman_id": "ae3f2001-4b0e-4d55-8d2e-dee7e6315b9d",
+		"name": "CQRS Events in Node",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "/products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://0.0.0.0:3000/products",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "3000",
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cart",
+			"item": [
+				{
+					"name": "/cart/:cartid",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://0.0.0.0:3000/cart/:cartid",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "3000",
+							"path": [
+								"cart",
+								":cartid"
+							],
+							"variable": [
+								{
+									"key": "cartid",
+									"value": "1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/cart/:cartid/product/:productid",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"price\": 548,\n    \"quantity\": 2\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://0.0.0.0:3000/cart/:cartid/product/:productid",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "3000",
+							"path": [
+								"cart",
+								":cartid",
+								"product",
+								":productid"
+							],
+							"variable": [
+								{
+									"key": "cartid",
+									"value": "1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed"
+								},
+								{
+									"key": "productid",
+									"value": "8857191f-5662-4cda-a559-b7b6c0ec471f"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/cart/:cartid/product/:productid",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://0.0.0.0:3000/cart/:cartid/product/:productid",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "3000",
+							"path": [
+								"cart",
+								":cartid",
+								"product",
+								":productid"
+							],
+							"variable": [
+								{
+									"key": "cartid",
+									"value": "1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed"
+								},
+								{
+									"key": "productid",
+									"value": "8857191f-5662-4cda-a559-b7b6c0ec471f"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

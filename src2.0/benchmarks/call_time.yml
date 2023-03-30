@@ -1,0 +1,12 @@
+base: 'http://0.0.0.0:8080'
+iterations: 1000
+concurrency: 10
+rampup: 2
+
+plan:
+  - name: Call Time Endpoint
+    request:
+      url: /time/
+      method: GET
+      headers:
+        Content-Type: 'application/json'

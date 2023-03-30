@@ -1,0 +1,136 @@
+{
+    "name": "UpdateProduct",
+    "description": "UpdateProduct desc",
+    "blueprint_spec": {
+      "requirements": ["core"],
+      "prepare": [],
+      "nodes": [
+        {
+          "id": "START-PRODUCT",
+          "name": "Start ",
+          "next": "BAG-USER-TASK",
+          "type": "Start",
+          "lane_id": "anyone",
+          "parameters": {
+            "timeout": 3600,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "color": {
+                  "type": "string"
+                },
+                "active": {
+                  "type": "string"
+                }
+              },
+              "required": []
+            }
+          }
+        },
+        {
+            "id": "BAG-USER-TASK",
+            "name": "Bag",
+            "next": "FINISH-PROCESS",
+            "type": "SystemTask",
+            "lane_id": "anyone",
+            "category": "setToBag",
+            "parameters": {
+              "input": {
+                "id": {
+                  "$ref": "result.activities[0].data.id"
+                },
+                "name": {
+                  "$ref": "result.activities[0].data.name"
+                },
+                "color": {
+                  "$ref": "result.activities[0].data.color"
+                },
+                "quantity": {
+                  "$ref": "result.activities[0].data.quantity"
+                }
+              }
+            }
+        },
+        {
+          "id": "CALL-ADD-ITEM",
+          "name": "call add item",
+          "next": "FINISH-PROCESS",
+          "type": "SystemTask",
+          "lane_id": "anyone",
+          "category": "HTTP",
+          "parameters": {
+            "input": {
+              "cartid": {
+                "$ref": "bag.cartid"
+              },
+              "productid": {
+                "$ref": "bag.productid"
+              },
+              "price": {
+                "$ref": "bag.price"
+              },
+              "quantity": {
+                "$ref": "bag.quantity"
+              }
+            },
+            "request": {
+              "url": {
+                "$mustache": "http://write_system:3000/cart/{{bag.cartid}}/product/{{bag.productid}}"
+              },
+              "verb": "POST",
+              "max_content_length": 100000
+            },
+            "valid_response_codes": [
+              200,
+              201,
+              203,
+              204
+            ]
+          },
+          "nodeSpec": "getLaneByLaneReference"
+        },
+        {
+          "id": "FINISH-PROCESS",
+          "name": "Finish process",
+          "type": "Finish",
+          "lane_id": "anyone",
+          "next": null,
+          "nodeSpec": "finishProcess",
+          "parameters": {
+            "input": {
+              "payload": {
+                "productId": {
+                  "$ref": "bag.productid"
+                },
+                "cartId": {
+                  "$ref": "bag.cartid"
+                },
+                "price": {
+                  "$ref": "bag.price"
+                },
+                "quantity": {
+                  "$ref": "bag.quantity"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "lanes": [
+        {
+          "id": "anyone",
+          "name": "always true",
+          "rule": {
+            "$js": "() => true"
+          }
+        }
+      ],
+      "environment": {}
+    }
+  }

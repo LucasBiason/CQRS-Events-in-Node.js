@@ -1,0 +1,60 @@
+{
+  "name": "UpdateProductQuery",
+  "description": "UpdateProductQuery desc",
+  "blueprint_spec": {
+    "requirements": [
+      "core"
+    ],
+    "prepare": [],
+    "nodes": [
+      {
+        "id": "START-CART-ITEM",
+        "name": "Start ",
+        "next": "FINISH-PROCESS",
+        "type": "Start",
+        "lane_id": "anyone",
+        "parameters": {
+          "timeout": 3600,
+          "input": {
+            "productId": {
+              "$ref": "bag.payload.productid"
+            },
+            "cartId": {
+              "$ref": "bag.payload.cartid"
+            }
+          },
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "productId": {
+                "type": "string"
+              },
+              "cartId": {
+                "type": "string"
+              }
+            },
+            "required": []
+          }
+        }
+      },
+      {
+        "id": "FINISH-PROCESS",
+        "name": "Finish process",
+        "type": "Finish",
+        "lane_id": "anyone",
+        "next": null,
+        "nodeSpec": "finishProcess"
+      }
+    ],
+    "lanes": [
+      {
+        "id": "anyone",
+        "name": "always true",
+        "rule": {
+          "$js": "() => true"
+        }
+      }
+    ],
+    "environment": {}
+  }
+}

@@ -1,0 +1,112 @@
+version: "3.3"
+
+services:
+
+  flowbuild_mqtt:
+    image: hivemq/hivemq4:latest
+    container_name: cqrs2_flowbuild_mqtt
+    restart: on-failure:10
+    ports:
+      - 8081:8080
+      - 1883:1883
+      - 8000:8000
+
+  postgres:
+    hostname: postgres
+    container_name: cqrs2_postgres_container
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      PGDATA: /data/postgres
+    volumes:
+       - postgres:/data/postgres
+    ports:
+      - "5437:5432"
+    restart: unless-stopped
+
+  pgadmin:
+    container_name: cqrs2_pgadmin_container
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+       - pgadmin:/var/lib/pgadmin
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    restart: unless-stopped
+
+  flowbuild_app:
+    container_name: cqrs2_flowbuild_app
+    hostname: cqrs2_flowbuild_app
+    restart: on-failure:10
+    expose:
+      - 3000
+    ports:
+      - 3000:3000
+    build:
+      context: .
+      dockerfile: flowbuild/Dockerfile
+    env_file: ./config/.env.flowbuild.dev
+    #command: bash -c " npm run migrations && npm run seeds && nodemon src/server.js"
+    command: bash -c " nodemon src/server.js"
+    volumes:
+      - .:/usr/app
+    depends_on:
+      - flowbuild_mqtt
+      - postgres
+
+  events-handler:
+    container_name: cqrs2_events_handler
+    hostname: events-handler
+    restart: unless-stopped
+    expose:
+      - 3000
+    build:
+      context: .
+      dockerfile: packages/events-handler/Dockerfile
+    command: npm run start
+    env_file: ./config/.env.events-handler.dev
+
+  produtos-query:
+    container_name: cqrs2_produtos_query
+    hostname: produtos-query
+    restart: unless-stopped
+    expose:
+      - 8087
+    ports:
+      - 8087:8087
+    build:
+      context: .
+      dockerfile: packages/produtos-query/Dockerfile
+    command: npm run start
+    env_file: ./config/.env.produtos-query.dev
+    depends_on:
+      - postgres
+
+  produtos-commands:
+    container_name: cqrs2_produtos_commands
+    hostname: produtos_commands
+    restart: unless-stopped
+    expose:
+      - 8088
+    ports:
+      - 8088:8088
+    build:
+      context: .
+      dockerfile: packages/produtos-commands/Dockerfile
+    command: npm run start
+    env_file: ./config/.env.produtos-commands.dev
+    depends_on:
+      - postgres
+
+
+networks:
+  default:
+    driver: bridge
+
+volumes:
+    postgres:
+    pgadmin:

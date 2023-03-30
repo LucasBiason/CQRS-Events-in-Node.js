@@ -1,0 +1,33 @@
+{
+  "name": "grpc-adapter",
+  "version": "0.0.0",
+  "description": "This library provides listeners for events bus",
+  "main": "dist/src/index.js",
+  "directories": {
+    "lib": "dist"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/init.js",
+    "dev": "ts-node-dev --transpile-only src/init.ts",
+    "lint": "npx eslint '**/*.ts' --ignore-pattern node_modules/ --fix"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@grpc/grpc-js": "^1.8.0",
+    "@grpc/proto-loader": "^0.7.4",
+    "dotenv": "^16.0.3",
+    "protobufjs": "^7.1.2"
+  },
+  "devDependencies": {
+    "@types/node-fetch": "^2.6.2",
+    "@typescript-eslint/eslint-plugin": "^5.41.0",
+    "@typescript-eslint/parser": "^5.41.0",
+    "eslint": "^8.26.0",
+    "eslint-config-google": "^0.14.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^4.8.2"
+  }
+}

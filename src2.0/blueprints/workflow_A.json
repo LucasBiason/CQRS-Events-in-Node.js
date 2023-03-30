@@ -1,0 +1,90 @@
+{
+    "name": "workflow_A",
+    "description": "workflow_A desc",
+    "blueprint_spec": {
+      "requirements": ["core"],
+      "prepare": [],
+      "nodes": [
+        {
+          "id": "START-CART-ITEM",
+          "name": "Start ",
+          "next": "ORDER-ITEM",
+          "type": "Start",
+          "lane_id": "anyone",
+          "parameters": {
+            "timeout": 3600,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "productId": {
+                  "type": "string"
+                },
+                "cartId": {
+                  "type": "string"
+                }
+              },
+              "required": []
+            }
+          }
+        },
+        {
+          "id": "ORDER-ITEM",
+          "name": "Ordem item",
+          "next": "BAG-USER-TASK",
+          "type": "UserTask",
+          "lane_id": "anyone",
+          "parameters": {
+            "input": {},
+            "action": "ADD_ITEM",
+            "activity_manager": "commit",
+            "activity_schema": {
+              "type": "object",
+              "properties": {}
+            }
+          }
+        },
+        {
+            "id": "BAG-USER-TASK",
+            "name": "Bag",
+            "next": "FINISH-PROCESS",
+            "type": "SystemTask",
+            "lane_id": "anyone",
+            "category": "setToBag",
+            "parameters": {
+              "input": {
+                "cartid": {
+                  "$ref": "result.activities[0].data.cartid"
+                },
+                "productid": {
+                  "$ref": "result.activities[0].data.productid"
+                },
+                "price": {
+                  "$ref": "result.activities[0].data.price"
+                },
+                "quantity": {
+                  "$ref": "result.activities[0].data.quantity"
+                }
+              }
+            }
+        },
+        {
+          "id": "FINISH-PROCESS",
+          "name": "Finish process",
+          "type": "Finish",
+          "lane_id": "anyone",
+          "next": null,
+          "nodeSpec": "finishProcess"
+        }
+      ],
+      "lanes": [
+        {
+          "id": "anyone",
+          "name": "always true",
+          "rule": {
+            "$js": "() => true"
+          }
+        }
+      ],
+      "environment": {}
+    }
+  }

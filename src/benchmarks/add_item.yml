@@ -1,0 +1,15 @@
+base: 'http://0.0.0.0:4000'
+iterations: 1000
+concurrency: 10
+rampup: 2
+
+plan:
+  - name: Add item to cart
+    with_items:
+      - { cartid : '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed', productid: '8857191f-5662-4cda-a559-b7b6c0ec471f' }
+    request:
+      url: /cart/{{item.cartid}}/product/{{item.productid}}
+      method: POST
+      body: '{"price": 10, "quantity": 1}'
+      headers:
+        Content-Type: 'application/json'

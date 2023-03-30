@@ -1,0 +1,71 @@
+{
+  "name": "@flowbuild/workflow",
+  "version": "2.3.2",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --watch --coverage --runInBand --forceExit",
+    "test:single": "jest -i --detectOpenHandles --forceExit",
+    "tests": "npm -- test",
+    "seeds": "knex --env ${KNEX_ENV} --knexfile knexfile.js seed:run",
+    "seeds:local": "knex --env dockerLocal --knexfile knexfile.js seed:run",
+    "migrations": "knex --env ${KNEX_ENV} --knexfile knexfile.js migrate:latest",
+    "migrations:local": "knex --env dockerLocal --knexfile knexfile.js migrate:latest",
+    "start": "nodemon src/server.js",
+    "watch": "nodemon --inspect=0.0.0.0 src/server.js",
+    "get-version": "echo $npm_package_version",
+    "release": "semantic-release",
+    "export": "node ./scripts/export.js",
+    "lint": "eslint ./src  --ext .js --max-warnings=0"
+  },
+  "devDependencies": {
+    "@semantic-release/changelog": "6.0.1",
+    "@semantic-release/git": "10.0.1",
+    "@semantic-release/npm": "9.0.1",
+    "conventional-changelog-conventionalcommits": "5.0.0",
+    "eslint": "8.22.0",
+    "jest": "27.5.1",
+    "nodemon": "2.0.19",
+    "semantic-release": "18.0.0",
+    "supertest": "6.1.6"
+  },
+  "dependencies": {
+    "@flowbuild/engine": "2.12.0",
+    "@flowbuild/indexer": "1.0.0-beta.3",
+    "@flowbuild/nodejs-diagram-builder": "1.1.0",
+    "@koa/router": "12.0.0",
+    "@supercharge/request-ip": "^1.2.0",
+    "ajv": "8.11.0",
+    "ajv-formats": "2.1.1",
+    "async-mqtt": "2.6.2",
+    "dotenv": "16.0.1",
+    "jsrsasign": "10.5.26",
+    "knex": "2.2.0",
+    "koa": "2.13.4",
+    "koa-bodyparser": "4.3.0",
+    "koa-compose": "4.1.0",
+    "koa-helmet": "^6.1.0",
+    "koa-jwt": "4.0.3",
+    "koa-logger": "3.2.1",
+    "koa-logger-winston": "0.0.2",
+    "koa-useragent": "^4.1.0",
+    "koa2-cors": "2.0.6",
+    "nanoid": "3.3.4",
+    "npm": "8.18.0",
+    "pg": "8.7.3",
+    "raw-body": "2.5.1",
+    "uuid": "8.3.2",
+    "winston": "3.8.1"
+  },
+  "keywords": [],
+  "author": "FDTE-DSD",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/flow-build/workflow.git"
+  },
+  "homepage": "https://github.com/flow-build/workflow#readme"
+}

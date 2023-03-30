@@ -1,0 +1,15 @@
+base: 'http://0.0.0.0:3000'
+iterations: 1000
+concurrency: 10
+rampup: 2
+
+plan:
+  - name: Get cart
+    with_items:
+      - { cartid : '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed' }
+    request:
+      url: /cart/{{item.cartid}}
+      method: GET
+      body: '{}'
+      headers:
+        Content-Type: 'application/json'
